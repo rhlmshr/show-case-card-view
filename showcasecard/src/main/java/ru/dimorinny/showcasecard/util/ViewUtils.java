@@ -1,6 +1,5 @@
 package ru.dimorinny.showcasecard.util;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PointF;
 import android.util.DisplayMetrics;
@@ -10,21 +9,24 @@ import android.view.ViewGroup;
 public class ViewUtils {
 
     public static int convertDpToPx(View view, int dp) {
-        return convertDpToPx(view.getContext(), dp);
-    }
-
-    public static int convertDpToPx(Context context, int dp) {
-        Resources resources = context.getResources();
+        Resources resources = view.getContext().getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return Math.round(dp * (metrics.densityDpi / 160.0f));
+    }
+
+    public static int convertPxToDp(View view, int px) {
+        Resources resources = view.getContext().getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return Math.round(dp);
     }
 
     public static PointF getAbsoluteCenterPosition(View view) {
         int[] positions = new int[2];
         view.getLocationOnScreen(positions);
         return new PointF(
-            (float) (positions[0] + view.getWidth() / 2),
-            (float) (positions[1] + view.getHeight() / 2)
+                (float) (positions[0] + view.getWidth() / 2),
+                (float) (positions[1] + view.getHeight() / 2)
         );
     }
 

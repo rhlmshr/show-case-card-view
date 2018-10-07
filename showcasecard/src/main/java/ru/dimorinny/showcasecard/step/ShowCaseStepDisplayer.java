@@ -13,8 +13,12 @@ import java.util.List;
 
 import ru.dimorinny.showcasecard.ShowCaseView;
 import ru.dimorinny.showcasecard.radius.Radius;
-import ru.dimorinny.showcasecard.util.ViewUtils;
 
+/**
+ * Created by Frank on 2017/08/16.
+ * <p>
+ * Controls the displaying of a list of {@link ShowCaseStep}'s one by one.
+ */
 public class ShowCaseStepDisplayer {
 
     private Context context;
@@ -26,37 +30,54 @@ public class ShowCaseStepDisplayer {
     @Nullable
     private ScrollView scrollView;
 
+    private float showCaseRadius;
+
+    /**
+     * All items to be displayed.
+     */
     private List<ShowCaseStep> items = new ArrayList<>();
 
     @Nullable
     private ShowCaseStepScroller showCaseStepScroller;
 
+    /**
+     * Index of the currently shown item in the items list.
+     */
     private int currentlyDisplayedTipIndex = -1;
 
     @Nullable
     private ShowCaseView showCaseView;
 
-    private ShowCaseStepDisplayer(
-        @Nullable Activity activity,
-        @Nullable Fragment fragment,
-        @Nullable ScrollView scrollView
-    ) {
+    /**
+     * @param scrollView scrollView to use on all {@link ShowCaseStep}'s that dictate
+     *                   scrolling on activation.
+     */
+    private ShowCaseStepDisplayer(@Nullable Activity activity, @Nullable Fragment fragment, @Nullable ScrollView scrollView) {
+
         this.activity = activity;
         this.fragment = fragment;
         this.scrollView = scrollView;
 
         //noinspection ConstantConditions
         this.context = activity != null ? activity : fragment.getContext();
+        showCaseRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70,
+                context.getResources().getDisplayMetrics());
 
         if (scrollView != null) {
             showCaseStepScroller = new ShowCaseStepScroller(scrollView);
         }
     }
 
+    /**
+     * Starts the tip-flow. Toggles (on click) through all help items on this page.
+     */
     public void start() {
         tryShowNextTip();
     }
 
+    /**
+     * Closes and resets the tips screen.
+     */
     public void dismiss() {
 
         if (showCaseView != null) {
@@ -67,6 +88,9 @@ public class ShowCaseStepDisplayer {
         items.clear();
     }
 
+    /**
+     * Displays the next tip on the screen, or closes the tip screen if no more tips are left.
+     */
     private void tryShowNextTip() {
 
         if (!isContextActive()) {
@@ -84,10 +108,15 @@ public class ShowCaseStepDisplayer {
         }
     }
 
+    /**
+     * Displays one tip on the screen. Tapping the screen will dismiss it.
+     *
+     * @param item tip details to display.
+     */
     private void displayTip(final ShowCaseStep item) {
 
         if (item.getPosition().getScrollPosition(scrollView) != null
-            && showCaseStepScroller != null) {
+                && showCaseStepScroller != null) {
             // try to scroll to the item
 
             if (showCaseView != null) {
@@ -97,13 +126,13 @@ public class ShowCaseStepDisplayer {
 
             // scroll first, after that display the item:
             showCaseStepScroller.scrollToShowCaseStepItem(
-                item,
-                new ShowCaseStepScroller.OnCompleteListener() {
-                    @Override
-                    public void onComplete() {
-                        doDisplayTip(item);
+                    item,
+                    new ShowCaseStepScroller.OnCompleteListener() {
+                        @Override
+                        public void onComplete() {
+                            doDisplayTip(item);
+                        }
                     }
-                }
             );
 
         } else {
@@ -125,20 +154,19 @@ public class ShowCaseStepDisplayer {
 
         final int myTipIndex = currentlyDisplayedTipIndex;
         showCaseView = new ShowCaseView.Builder(context)
-            .withTypedPosition(item.getPosition())
-            .withTypedRadius(item.getRadius())
-            .dismissOnTouch(false)
-            .withTouchListener(new ShowCaseView.TouchListener() {
-                @Override
-                public void onTouchEvent() {
-                    if (myTipIndex == currentlyDisplayedTipIndex) {
-                        tryShowNextTip();
+                .withTypedPosition(item.getPosition())
+                .dismissOnTouch(false)
+                .withTypedRadius(new Radius(item.getRadius()))
+                .withTouchListener(new ShowCaseView.TouchListener() {
+                    @Override
+                    public void onTouchEvent() {
+                        if (myTipIndex == currentlyDisplayedTipIndex) {
+                            tryShowNextTip();
+                        }
                     }
-                }
-            })
-            .withContent(item.getMessage())
-            .withColor(item.getColor())
-            .build();
+                })
+                .withContent(item.getMessage())
+                .build();
 
         if (activity == null) {
             showCaseView.show(fragment);
@@ -233,7 +261,7 @@ public class ShowCaseStepDisplayer {
         public ShowCaseStepDisplayer build() {
 
             ShowCaseStepDisplayer stepController =
-                new ShowCaseStepDisplayer(activity, fragment, scrollView);
+                    new ShowCaseStepDisplayer(activity, fragment, scrollView);
 
             stepController.setSteps(items);
 

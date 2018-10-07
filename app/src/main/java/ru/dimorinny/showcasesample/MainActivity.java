@@ -18,9 +18,8 @@ import ru.dimorinny.showcasecard.position.TopRightToolbar;
 import ru.dimorinny.showcasecard.position.ViewPosition;
 import ru.dimorinny.showcasecard.radius.Radius;
 import ru.dimorinny.showcasecard.radius.ShowCaseRadius;
-import ru.dimorinny.showcasecard.step.ShowCaseStep;
 import ru.dimorinny.showcasecard.step.ShowCaseStepDisplayer;
-import ru.dimorinny.showcasecard.util.ViewUtils;
+import ru.dimorinny.showcasecard.step.ShowCaseStep;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,60 +52,20 @@ public class MainActivity extends AppCompatActivity {
         topLeftToolbar.setOnClickListener(v -> showTipWithPosition(new TopLeftToolbar()));
         topRightToolbar.setOnClickListener(v -> showTipWithPosition(new TopRightToolbar()));
         viewPosition.setOnClickListener(v -> showTipWithPosition(new ViewPosition(
-            viewPosition
+                viewPosition
         )));
         listOfSteps.setOnClickListener(v -> displayListOfSteps());
     }
 
     private void displayListOfSteps() {
-        new ShowCaseStepDisplayer.Builder(this)
-            .withScrollView(scrollView)
-            .addStep(
-                new ShowCaseStep.Builder()
-                    .withMessage("This is the center of the screen. Tap anywhere to continue.")
-                    .withTypedPosition(new Center())
-                    .build(this)
-            )
-            .addStep(
-                new ShowCaseStep.Builder()
-                    .withMessage("This is the button you just clicked.")
-                    .withTypedPosition(new ViewPosition(listOfSteps))
-                    .build(this)
-            )
-            .addStep(
-                new ShowCaseStep.Builder()
-                    .withMessage("A dummy item to auto-scroll to.")
-                    .withTypedPosition(new ViewPosition(dummyViewToScrollTo))
-                    .build(this)
-            )
 
-            .addStep(
-                new ShowCaseStep.Builder()
-                    .withMessage("We end our showcase at the top button.")
-                    .withTypedPosition(new ViewPosition(topLeft))
-                    .build(this)
-            )
-            .addStep(
-                new ShowCaseStep.Builder()
-                    .withMessage("With custom radius")
-                    .withTypedPosition(new ViewPosition(topLeftToolbar))
-                    .withTypedRadius(new Radius(
-                        ViewUtils.convertDpToPx(
-                            this,
-                            100
-                        )
-                    ))
-                    .build(this)
-            )
-            .addStep(
-                new ShowCaseStep.Builder()
-                    .withMessage("With custom color")
-                    .withTypedPosition(new ViewPosition(topRightToolbar))
-                    .withColor(R.color.colorPrimaryDark)
-                    .build(this)
-            )
-            .build()
-            .start();
+        new ShowCaseStepDisplayer.Builder(this)
+                .withScrollView(scrollView)
+                .addStep(new ShowCaseStep(new Center(), "This is the center of the screen. Tap anywhere to continue."))
+                .addStep(new ShowCaseStep(listOfSteps, "This is the button you just clicked."))
+                .addStep(new ShowCaseStep(dummyViewToScrollTo, "A dummy item to auto-scroll to."))
+                .addStep(new ShowCaseStep(topLeft, "We end our showcase at the top button."))
+                .build().start();
     }
 
     private void initButtons() {
@@ -122,19 +81,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void showTipWithPosition(ShowCasePosition position) {
         showTip(
-            position,
-            new Radius(186F)
+                position,
+                new Radius(186F)
         );
     }
 
     private void showTip(ShowCasePosition position, ShowCaseRadius radius) {
         new ShowCaseView.Builder(MainActivity.this)
-            .withTypedPosition(position)
-            .withTypedRadius(radius)
-            .withContent(
-                "This is hello world!"
-            )
-            .build()
-            .show(MainActivity.this);
+                .withTypedPosition(position)
+                .withTypedRadius(radius)
+                .withContent(
+                        "This is hello world!"
+                )
+                .build()
+                .show(MainActivity.this);
     }
 }
